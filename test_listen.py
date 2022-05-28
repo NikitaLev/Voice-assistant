@@ -1,3 +1,6 @@
+import threading
+import time
+
 import vosk
 import sys
 import sounddevice as sd
@@ -23,9 +26,11 @@ def va_listen(callback):
 
         rec = vosk.KaldiRecognizer(model, samplerate)
         while True:
-
             data = q.get()
             if rec.AcceptWaveform(data):
-                callback(json.loads(rec.Result())["text"])
-            else:
-                print(rec.PartialResult())
+                params = {"voice": json.loads(rec.Result())["text"]}
+                task_listen = threading.Thread(name="listen_step_2", target=callback, kwargs=params)
+                task_listen.start()
+                task_listen.join()
+            #else:
+                #print(rec.PartialResult())

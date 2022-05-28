@@ -12,24 +12,29 @@ from pywinauto.application import Application
 import config
 import speaker
 import test_listen
-
-model = vosk.Model("model")
-samplerate = 16000
-device = 1
-
-q = queue.Queue()
+import threading
 
 
 def va_respond(voice: str):
-    print(voice)
+    print(voice + "11111")
     if voice.startswith(config.VA_ALIAS):
-        # обращаются к ассистенту
         cmd = recognize_cmd(filter_cmd(voice))
-
         if cmd['cmd'] not in config.VA_CMD_LIST.keys():
             speaker.va_speak("Что?")
         else:
             execute_cmd(cmd['cmd'])
+
+
+def recognize_cmd(cmd: str):
+    rc = {'cmd': '', 'percent': 0}
+    for c, v in config.VA_CMD_LIST.items():
+        for x in v:
+            vrt = fuzz.ratio(cmd, x)
+            if vrt > rc['percent']:
+                rc['cmd'] = c
+                rc['percent'] = vrt
+
+    return rc
 
 
 def filter_cmd(raw_voice: str):
@@ -100,38 +105,31 @@ def execute_cmd(cmd: str):
         app = Application(backend='uia').start(path + 'FortniteLauncher.exe')
     elif cmd == 'steam_start':
         txt = ['запускаю стим, господин',
-                 'самое время для отдыха, господин']
+               'самое время для отдыха, господин']
         speaker.va_speak(random.choice(txt))
         path = 'E:\\steam\\'
         app = Application(backend='uia').start(path + 'steam.exe')
     elif cmd == 'notepad':
         txt = ['запускаю блокнот, господин',
-                 'что-то нужно записать, господин?',
-                 'уже запускаю, . господин']
+               'что-то нужно записать, господин?',
+               'уже запускаю, . господин']
         speaker.va_speak(random.choice(txt))
         app = Application(backend='uia').start('notepad.exe')
-#app = Application().start("notepad.exe")
-#app.UntitledNotepad.Edit.type_keys("йцукен гшщ зх!", with_spaces = True)
 
 
-
-def recognize_cmd(cmd: str):
-    rc = {'cmd': '', 'percent': 0}
-    for c, v in config.VA_CMD_LIST.items():
-
-        for x in v:
-            vrt = fuzz.ratio(cmd, x)
-            if vrt > rc['percent']:
-                rc['cmd'] = c
-                rc['percent'] = vrt
-
-    return rc
+# app = Application().start("notepad.exe")
+# app.UntitledNotepad.Edit.type_keys("йцукен гшщ зх!", with_spaces = True)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    test_listen.va_listen(va_respond)
+    params = {"callback": va_respond}
+
+    task_listen = threading.Thread(name="listen_step_1", target=test_listen.va_listen, kwargs=params)
+    task_listen.start()
+    # test_listen.va_listen(va_respond)
 
 # else:
 #    print(rec.PartialResult())
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
