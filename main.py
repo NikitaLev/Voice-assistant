@@ -11,12 +11,13 @@ import random
 from pywinauto.application import Application
 import config
 import speaker
+import word_worker as word
 import test_listen
 import threading
 
 
 def va_respond(voice: str):
-    print(voice + "11111")
+    #print(voice + "11111")
     if voice.startswith(config.VA_ALIAS):
         cmd = recognize_cmd(filter_cmd(voice))
         if cmd['cmd'] not in config.VA_CMD_LIST.keys():
@@ -123,6 +124,27 @@ def execute_cmd(cmd: str):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    """word.start_print()
+
+    word.set_standart_text()
+    word.string_writer("text text text text text text")
+
+    word.set_header_text(1)
+    word.string_writer("Heading 1")
+
+    word.set_standart_text()
+    word.string_writer("text text text")
+
+    word.bage_break()
+
+    word.set_header_text(1)
+    word.string_writer("Heading 2")
+
+    word.set_standart_text()
+    word.string_writer("text text text text text text")
+    word.save_file()
+ """
+
     params = {"callback": va_respond}
 
     task_listen = threading.Thread(name="listen_step_1", target=test_listen.va_listen, kwargs=params)
