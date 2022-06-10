@@ -11,13 +11,14 @@ import random
 from pywinauto.application import Application
 import config
 import speaker
+from num2t4ru import num2text
+from text_to_num import text2num
 import word_worker as word
 import test_listen
 import threading
 
 
 def va_respond(voice: str):
-    #print(voice + "11111")
     if voice.startswith(config.VA_ALIAS):
         cmd = recognize_cmd(filter_cmd(voice))
         if cmd['cmd'] not in config.VA_CMD_LIST.keys():
@@ -63,7 +64,7 @@ def execute_cmd(cmd: str):
     elif cmd == 'ctime':
         # current time
         now = datetime.datetime.now()
-        text = "Сейчас " + now.hour + " " + now.minute
+        text = "Сейч+ас " + num2text(now.hour) + " " + num2text(now.minute)
         speaker.va_speak(text)
     elif cmd == 'joke':
         jokes = ['Как смеются программисты? ... ехе ехе ехе',
