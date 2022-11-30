@@ -41,7 +41,7 @@ def recognize_cmd(cmd: str):
 
 def filter_cmd(raw_voice: str):
     cmd = raw_voice
-
+    print(cmd)
     for x in config.VA_ALIAS:
         cmd = cmd.replace(x, "").strip()
 
@@ -52,7 +52,6 @@ def filter_cmd(raw_voice: str):
 
 
 def execute_cmd(cmd: str):
-    print(cmd)
     if cmd == 'help':
         # help
         text = "Я умею: ..."
@@ -112,9 +111,7 @@ def execute_cmd(cmd: str):
         path = 'E:\\steam\\'
         app = Application(backend='uia').start(path + 'steam.exe')
     elif cmd == 'notepad':
-        txt = ['запускаю блокнот, господин',
-               'что-то нужно записать, господин?',
-               'уже запускаю, . господин']
+        txt = ['если вам что-то нужно написать, пишите сами, я пока этого не умею']
         speaker.va_speak(random.choice(txt))
         app = Application(backend='uia').start('notepad.exe')
 
